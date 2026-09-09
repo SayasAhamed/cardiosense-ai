@@ -18,6 +18,9 @@ def predict(
     db: Session = Depends(get_db)
 ):
 
+    
+    print("Incoming Prediction:", data.model_dump())
+
     result = predict_heart_risk(
         data,
         db,

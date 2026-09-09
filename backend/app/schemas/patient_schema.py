@@ -1,23 +1,24 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
+from typing import Optional
 
-# =========================
-# CREATE PATIENT
-# =========================
-
-class PatientCreate(BaseModel):
-
+class PatientBase(BaseModel):
     full_name: str
     age: int
     gender: str
-    phone: str
-    address: str
+    phone: Optional[str] = None
+    email: Optional[EmailStr] = None
+    address: Optional[str] = None
 
-# =========================
-# RESPONSE
-# =========================
 
-class PatientResponse(PatientCreate):
+class PatientCreate(PatientBase):
+    pass
 
+
+class PatientUpdate(PatientBase):
+    pass
+
+
+class PatientResponse(PatientBase):
     id: int
 
     class Config:
