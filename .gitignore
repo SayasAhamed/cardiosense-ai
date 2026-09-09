@@ -24,3 +24,10 @@ backend/build/
 
 # Logs
 *.log
+
+# Python cache
+backend/**/__pycache__/
+backend/**/*.pyc
+
+# Python virtual environment
+backend/venv/
