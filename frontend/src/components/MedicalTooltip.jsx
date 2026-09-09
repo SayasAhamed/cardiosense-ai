@@ -1,51 +1,40 @@
-function MedicalTooltip({
+import { FaInfoCircle } from "react-icons/fa";
+import { useState } from "react";
 
-    title,
+function MedicalTooltip({ title, normalRange, description, darkMode }) {
+  const [open, setOpen] = useState(false);
 
-    description
+  return (
+    <div className="relative inline-block">
+      <button
+        type="button"
+        onMouseEnter={() => setOpen(true)}
+        onMouseLeave={() => setOpen(false)}
+        onClick={() => setOpen(!open)}
+        className="ml-2 text-cyan-500 hover:text-cyan-600"
+      >
+        <FaInfoCircle size={15} />
+      </button>
 
-}) {
+      {open && (
+        <div
+          className={`absolute z-50 w-72 p-4 rounded-xl shadow-2xl border mt-2 left-0 ${
+            darkMode
+              ? "bg-slate-800 border-slate-700 text-white"
+              : "bg-white border-gray-300 text-slate-800"
+          }`}
+        >
+          <h4 className="mb-2 font-bold text-cyan-400">{title}</h4>
 
-    return (
+          <p className="mb-2 text-sm">{description}</p>
 
-        <div className="relative inline-block ml-2 group">
-
-            {/* INFO ICON */}
-
-            <span
-                className="text-sm font-bold transition cursor-pointer text-cyan-400 hover:text-cyan-300"
-            >
-
-                ⓘ
-
-            </span>
-
-            {/* TOOLTIP */}
-
-            <div
-                className="absolute left-0 z-50 hidden p-5 border shadow-2xl group-hover:block w-80 bg-slate-900 border-cyan-500 rounded-2xl top-8 animate-fadeIn"
-            >
-
-                <h3
-                    className="mb-3 text-lg font-bold text-cyan-400"
-                >
-
-                    {title}
-
-                </h3>
-
-                <p
-                    className="text-sm leading-relaxed text-gray-300 "
-                >
-
-                    {description}
-
-                </p>
-
-            </div>
-
+          <div className="text-xs font-semibold text-green-500">
+            Normal Range: {normalRange}
+          </div>
         </div>
-    )
+      )}
+    </div>
+  );
 }
 
-export default MedicalTooltip
+export default MedicalTooltip;

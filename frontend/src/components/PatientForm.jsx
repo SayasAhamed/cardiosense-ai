@@ -1,308 +1,272 @@
-import { useState } from "react"
-import axios from "axios"
-import MedicalTooltip from "./MedicalTooltip"
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 function PatientForm({
-
-    darkMode,
-
-    onPatientAdded
-
+  darkMode,
+  editingPatient,
+  setEditingPatient,
+  onPatientAdded,
 }) {
+  // ====================================
+  // FORM STATE
+  // ====================================
 
-    const [patientData, setPatientData] = useState({
+  const [formData, setFormData] = useState({
+    full_name: "",
+    age: "",
+    gender: "Male",
+    phone: "",
+    address: "",
+  });
 
-        full_name: "",
-        age: "",
-        gender: "Male",
-        phone: "",
-        address: ""
+  const [loading, setLoading] = useState(false);
 
-    })
+  // ====================================
+  // LOAD EDITING PATIENT
+  // ====================================
 
-    const handleChange = (e) => {
+  useEffect(() => {
+    if (editingPatient) {
+      setFormData({
+        full_name: editingPatient.full_name || "",
+        age: editingPatient.age || "",
+        gender: editingPatient.gender || "Male",
+        phone: editingPatient.phone || "",
+        address: editingPatient.address || "",
+      });
 
-        const { name, value } = e.target
+      // Scroll to form when editing
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
+    }
+  }, [editingPatient]);
 
-        setPatientData({
+  // ====================================
+  // HANDLE INPUT CHANGE
+  // ====================================
 
-            ...patientData,
-            [name]: value
+  const handleChange = (e) => {
+    const { name, value } = e.target;
 
-        })
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  // ====================================
+  // CLEAR FORM
+  // ====================================
+
+  const clearForm = () => {
+    setFormData({
+      full_name: "",
+      age: "",
+      gender: "Male",
+      phone: "",
+      address: "",
+    });
+
+    setEditingPatient(null);
+  };
+
+  // ====================================
+  // SUBMIT FORM
+  // ====================================
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (
+      !formData.full_name ||
+      !formData.age ||
+      !formData.phone ||
+      !formData.address
+    ) {
+      alert("Please fill all required fields.");
+      return;
     }
 
-    const handleSubmit = async (e) => {
+    setLoading(true);
 
-        e.preventDefault()
+    try {
+      // UPDATE PATIENT
+      if (editingPatient) {
+        await axios.put(
+          `http://127.0.0.1:8000/patients/${editingPatient.id}`,
+          formData
+        );
 
-        try {
+        alert("Patient updated successfully.");
+      }
 
-            await axios.post(
+      // CREATE PATIENT
+      else {
+        await axios.post(
+          "http://127.0.0.1:8000/patients/",
+          formData
+        );
 
-                "http://127.0.0.1:8000/patients/",
-                patientData
+        alert("Patient registered successfully.");
+      }
 
-            )
+      clearForm();
 
-            alert("Patient Added Successfully")
+      onPatientAdded();
+    } catch (error) {
+      console.error(error);
 
-            // RESET FORM
-
-            setPatientData({
-
-                full_name: "",
-                age: "",
-                gender: "Male",
-                phone: "",
-                address: ""
-
-            })
-
-            // REFRESH PATIENT LIST
-
-            if (onPatientAdded) {
-
-                onPatientAdded()
-
-            }
-
-        } catch (error) {
-
-            console.log(error)
-
-            alert("Failed to add patient")
-        }
+      alert(
+        error.response?.data?.detail ||
+          "Failed to save patient."
+      );
     }
 
-    return (
-
-        <div
-
-            className={`
-
-                p-8
-                rounded-2xl
-                shadow-2xl
-                border
-
-                ${darkMode
-
-                    ? "bg-slate-900 border-slate-800"
-
-                    : "bg-white border-gray-300"
-
-                }
-
-            `}
-        >
-
-            <h2 className="mb-8 text-3xl font-bold text-cyan-400">
-
-                Patient Registration
-
-            </h2>
-
-            <form
-
-                onSubmit={handleSubmit}
-
-                className="space-y-6"
-            >
-
-                <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-
-                    {/* FULL NAME */}
-
-                    <input
-
-                        type="text"
-
-                        name="full_name"
-
-                        placeholder="Patient Full Name"
-
-                        value={patientData.full_name}
-
-                        onChange={handleChange}
-
-                        required
-
-                        className={`
-
-                            p-5
-                            rounded-xl
-                            outline-none
-
-                            ${darkMode
-
-                                ? "bg-slate-800 text-white"
-
-                                : "bg-gray-200 text-slate-900"
-
-                            }
-
-                        `}
-                    />
-
-                    {/* AGE */}
-
-                    <input
-
-                        type="number"
-
-                        name="age"
-
-                        placeholder="Age"
-
-                        value={patientData.age}
-
-                        onChange={handleChange}
-
-                        required
-
-                        className={`
-
-                            p-5
-                            rounded-xl
-                            outline-none
-
-                            ${darkMode
-
-                                ? "bg-slate-800 text-white"
-
-                                : "bg-gray-200 text-slate-900"
-
-                            }
-
-                        `}
-                    />
-
-                    {/* GENDER */}
-
-                    <select
-
-                        name="gender"
-
-                        value={patientData.gender}
-
-                        onChange={handleChange}
-
-                        className={`
-
-                            p-5
-                            rounded-xl
-                            outline-none
-
-                            ${darkMode
-
-                                ? "bg-slate-800 text-white"
-
-                                : "bg-gray-200 text-slate-900"
-
-                            }
-
-                        `}
-                    >
-
-                        <option value="Male">
-                            Male
-                        </option>
-
-                        <option value="Female">
-                            Female
-                        </option>
-
-                    </select>
-
-                    {/* PHONE */}
-
-                    <input
-
-                        type="text"
-
-                        name="phone"
-
-                        placeholder="Phone Number"
-
-                        value={patientData.phone}
-
-                        onChange={handleChange}
-
-                        required
-
-                        className={`
-
-                            p-5
-                            rounded-xl
-                            outline-none
-
-                            ${darkMode
-
-                                ? "bg-slate-800 text-white"
-
-                                : "bg-gray-200 text-slate-900"
-
-                            }
-
-                        `}
-                    />
-
-                </div>
-
-                {/* ADDRESS */}
-
-                <textarea
-
-                    name="address"
-
-                    placeholder="Address"
-
-                    value={patientData.address}
-
-                    onChange={handleChange}
-
-                    rows="5"
-
-                    required
-
-                    className={`
-
-                        w-full
-                        p-5
-                        rounded-xl
-                        outline-none
-
-                        ${darkMode
-
-                            ? "bg-slate-800 text-white"
-
-                            : "bg-gray-200 text-slate-900"
-
-                        }
-
-                    `}
-                />
-
-
-                {/* SUBMIT */}
-
-                <button
-
-                    type="submit"
-
-                    className="w-full p-5 font-bold text-white transition rounded-xl bg-cyan-500 hover:bg-cyan-600"
-
-                >
-
-                    Register Patient
-
-                </button>
-
-            </form>
-
+    setLoading(false);
+  };
+
+  return (
+    <div
+      className={`rounded-2xl border shadow-xl p-8 ${
+        darkMode
+          ? "bg-slate-900 border-slate-800"
+          : "bg-white border-gray-300"
+      }`}
+    >
+      {/* TITLE */}
+
+      <div className="flex items-center justify-between mb-8">
+        <h2 className="text-3xl font-bold text-cyan-400">
+          {editingPatient
+            ? "Edit Patient"
+            : "Patient Registration"}
+        </h2>
+
+        {editingPatient && (
+          <span className="px-3 py-1 text-sm font-bold text-yellow-400 bg-yellow-100 rounded-full">
+            EDIT MODE
+          </span>
+        )}
+      </div>
+
+      {/* FORM */}
+
+      <form onSubmit={handleSubmit} className="space-y-6">
+        {/* ROW 1 */}
+
+        <div className="grid gap-5 md:grid-cols-2">
+          <input
+            type="text"
+            name="full_name"
+            value={formData.full_name}
+            onChange={handleChange}
+            placeholder="Patient Full Name"
+            className={`p-4 rounded-xl outline-none border transition ${
+              darkMode
+                ? "bg-slate-800 border-slate-700 text-white placeholder-gray-400 focus:border-cyan-500"
+                : "bg-gray-100 border-gray-300 text-black placeholder-gray-500 focus:border-cyan-500"
+            }`}
+          />
+
+          <input
+            type="number"
+            name="age"
+            value={formData.age}
+            onChange={handleChange}
+            placeholder="Age"
+            className={`p-4 rounded-xl outline-none border transition ${
+              darkMode
+                ? "bg-slate-800 border-slate-700 text-white placeholder-gray-400 focus:border-cyan-500"
+                : "bg-gray-100 border-gray-300 text-black placeholder-gray-500 focus:border-cyan-500"
+            }`}
+          />
         </div>
-    )
+
+        {/* ROW 2 */}
+
+        <div className="grid gap-5 md:grid-cols-2">
+          <select
+            name="gender"
+            value={formData.gender}
+            onChange={handleChange}
+            className={`p-4 rounded-xl outline-none border transition ${
+              darkMode
+                ? "bg-slate-800 border-slate-700 text-white focus:border-cyan-500"
+                : "bg-gray-100 border-gray-300 text-black focus:border-cyan-500"
+            }`}
+          >
+            <option value="Male">Male</option>
+
+            <option value="Female">Female</option>
+
+            <option value="Other">Other</option>
+          </select>
+
+          <input
+            type="text"
+            name="phone"
+            value={formData.phone}
+            onChange={handleChange}
+            placeholder="Phone Number"
+            className={`p-4 rounded-xl outline-none border transition ${
+              darkMode
+                ? "bg-slate-800 border-slate-700 text-white placeholder-gray-400 focus:border-cyan-500"
+                : "bg-gray-100 border-gray-300 text-black placeholder-gray-500 focus:border-cyan-500"
+            }`}
+          />
+        </div>
+
+        {/* ADDRESS */}
+
+        <textarea
+          rows={5}
+          name="address"
+          value={formData.address}
+          onChange={handleChange}
+          placeholder="Address"
+          className={`w-full p-4 rounded-xl outline-none border transition resize-none ${
+            darkMode
+              ? "bg-slate-800 border-slate-700 text-white placeholder-gray-400 focus:border-cyan-500"
+              : "bg-gray-100 border-gray-300 text-black placeholder-gray-500 focus:border-cyan-500"
+          }`}
+        />
+
+        {/* BUTTONS */}
+
+        <div className="flex flex-col gap-3 md:flex-row">
+          {/* SUBMIT */}
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="flex-1 py-4 font-bold text-white transition bg-cyan-500 rounded-xl hover:bg-cyan-600 disabled:bg-cyan-300"
+          >
+            {loading
+              ? editingPatient
+                ? "Updating..."
+                : "Registering..."
+              : editingPatient
+              ? "Update Patient"
+              : "Register Patient"}
+          </button>
+
+          {/* CANCEL EDIT */}
+
+          {editingPatient && (
+            <button
+              type="button"
+              onClick={clearForm}
+              className="flex-1 py-4 font-bold text-white transition bg-gray-500 rounded-xl hover:bg-gray-600"
+            >
+              Cancel Editing
+            </button>
+          )}
+        </div>
+      </form>
+    </div>
+  );
 }
 
-export default PatientForm
+export default PatientForm;

@@ -37,6 +37,8 @@ function App() {
 
 const [refreshPatients, setRefreshPatients] = useState(false)
 
+const [editingPatient, setEditingPatient] = useState(null);
+
   // =========================================
   // LOAD SETTINGS
   // =========================================
@@ -354,23 +356,23 @@ const [refreshPatients, setRefreshPatients] = useState(false)
         {/* PATIENTS */}
 
         {activeTab === "patients" && (
+          <div className="space-y-10">
+            <PatientForm
+              darkMode={darkMode}
+              editingPatient={editingPatient}
+              setEditingPatient={setEditingPatient}
+              onPatientAdded={() => {
+                setRefreshPatients(!refreshPatients);
+              }}
+            />
 
-            <div className="space-y-10">
-
-                <PatientForm
-                    darkMode={darkMode}
-                    onPatientAdded={() =>
-                        setRefreshPatients(!refreshPatients)
-                    }
-                />
-
-                <PatientList
-                    darkMode={darkMode}
-                    refreshPatients={refreshPatients}
-                />
-
-            </div>
-
+            <PatientList
+              darkMode={darkMode}
+              refreshPatients={refreshPatients}
+              setRefreshPatients={setRefreshPatients}
+              setEditingPatient={setEditingPatient}
+            />
+          </div>
         )}
 
         {/* HISTORY */}
