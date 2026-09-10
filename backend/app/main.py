@@ -11,6 +11,7 @@ from app.database import Base, engine, SessionLocal
 from app.models.user import User
 from app.models.patient import Patient
 from app.models.prediction import Prediction
+from app.models.password_reset import PasswordResetToken
 
 # Security
 from app.auth.security import hash_password
