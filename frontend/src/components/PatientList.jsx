@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../services/api";
 import { FaEdit, FaTrash, FaEye, FaSearch } from "react-icons/fa";
 
 import ConfirmModal from "./ConfirmModal";
@@ -11,9 +11,9 @@ function PatientList({
   setRefreshPatients,
   setEditingPatient,
 }) {
-  // ====================================
+  // ============================
   // STATES
-  // ====================================
+  // ============================
 
   const [patients, setPatients] = useState([]);
   const [filteredPatients, setFilteredPatients] = useState([]);
@@ -25,34 +25,42 @@ function PatientList({
   const [deletePatient, setDeletePatient] = useState(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
-  // ====================================
+  const [loading, setLoading] = useState(true);
+
+  // ============================
   // FETCH PATIENTS
-  // ====================================
+  // ============================
 
   const fetchPatients = async () => {
     try {
-      const response = await axios.get(
-        "http://127.0.0.1:8000/patients/"
-      );
+      setLoading(true);
+
+      const response = await api.get("/patients/");
+
+      console.log("Patients Response:", response.data);
 
       setPatients(response.data);
       setFilteredPatients(response.data);
     } catch (error) {
       console.error("Error fetching patients:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
-  // ====================================
-  // LOAD DATA
-  // ====================================
-
   useEffect(() => {
     fetchPatients();
+  }, []);
+
+  useEffect(() => {
+    if (refreshPatients !== undefined) {
+      fetchPatients();
+    }
   }, [refreshPatients]);
 
-  // ====================================
-  // SEARCH (Local Filter)
-  // ====================================
+  // ============================
+  // SEARCH
+  // ============================
 
   const handleSearch = (value) => {
     setSearchQuery(value);
@@ -73,17 +81,17 @@ function PatientList({
     setFilteredPatients(filtered);
   };
 
-  // ====================================
+  // ============================
   // DELETE PATIENT
-  // ====================================
+  // ============================
 
   const handleDeletePatient = async () => {
     if (!deletePatient) return;
 
     try {
-      await axios.delete(
-        `http://127.0.0.1:8000/patients/${deletePatient.id}`
-      );
+      await api.delete(`/patients/${deletePatient.id}`);
+
+      alert("Patient deleted successfully.");
 
       setShowDeleteModal(false);
       setDeletePatient(null);
@@ -93,8 +101,6 @@ function PatientList({
       if (setRefreshPatients) {
         setRefreshPatients((prev) => !prev);
       }
-
-      alert("Patient deleted successfully.");
     } catch (error) {
       console.error(error);
 
@@ -105,12 +111,12 @@ function PatientList({
     }
   };
 
+  // ============================
+  // UI
+  // ============================
+
   return (
     <div className="space-y-8">
-
-      {/* ==================================== */}
-      {/* PATIENT TABLE */}
-      {/* ==================================== */}
 
       <div
         className={`p-8 rounded-2xl shadow-2xl border ${
@@ -119,14 +125,12 @@ function PatientList({
             : "bg-white border-gray-300"
         }`}
       >
-        {/* HEADER */}
+        {/* Header */}
 
         <div className="flex flex-col gap-5 mb-8 md:flex-row md:items-center md:justify-between">
           <h2 className="text-3xl font-bold text-cyan-400">
             Registered Patients
           </h2>
-
-          {/* SEARCH */}
 
           <div className="relative w-full md:w-80">
             <FaSearch className="absolute text-gray-400 -translate-y-1/2 left-4 top-1/2" />
@@ -145,7 +149,7 @@ function PatientList({
           </div>
         </div>
 
-        {/* TABLE */}
+        {/* Table */}
 
         <div className="overflow-x-auto rounded-xl">
           <table className="w-full">
@@ -167,7 +171,16 @@ function PatientList({
             </thead>
 
             <tbody>
-              {filteredPatients.length === 0 ? (
+              {loading ? (
+                <tr>
+                  <td
+                    colSpan="6"
+                    className="py-8 text-center text-gray-500"
+                  >
+                    Loading patients...
+                  </td>
+                </tr>
+              ) : filteredPatients.length === 0 ? (
                 <tr>
                   <td
                     colSpan="6"
@@ -199,27 +212,22 @@ function PatientList({
 
                     <td className="p-4">{patient.phone}</td>
 
-                    {/* ACTIONS */}
-
                     <td className="p-4">
                       <div className="flex justify-center gap-2">
 
-                        {/* VIEW */}
-
                         <button
+                          title="View Patient"
                           onClick={(e) => {
                             e.stopPropagation();
                             setSelectedPatient(patient.id);
                           }}
-                          title="View Patient"
                           className="p-2 text-blue-500 rounded-lg hover:bg-blue-100"
                         >
                           <FaEye size={16} />
                         </button>
 
-                        {/* EDIT */}
-
                         <button
+                          title="Edit Patient"
                           onClick={(e) => {
                             e.stopPropagation();
                             setEditingPatient(patient);
@@ -229,21 +237,18 @@ function PatientList({
                               behavior: "smooth",
                             });
                           }}
-                          title="Edit Patient"
                           className="p-2 text-yellow-500 rounded-lg hover:bg-yellow-100"
                         >
                           <FaEdit size={16} />
                         </button>
 
-                        {/* DELETE */}
-
                         <button
+                          title="Delete Patient"
                           onClick={(e) => {
                             e.stopPropagation();
                             setDeletePatient(patient);
                             setShowDeleteModal(true);
                           }}
-                          title="Delete Patient"
                           className="p-2 text-red-500 rounded-lg hover:bg-red-100"
                         >
                           <FaTrash size={16} />
@@ -255,10 +260,11 @@ function PatientList({
                 ))
               )}
             </tbody>
+
           </table>
         </div>
 
-        {/* FOOTER */}
+        {/* Footer */}
 
         <div
           className={`mt-5 text-sm ${
@@ -272,21 +278,17 @@ function PatientList({
         </div>
       </div>
 
-      {/* ==================================== */}
-      {/* PATIENT PROFILE */}
-      {/* ==================================== */}
+      {/* Patient Profile */}
 
       {selectedPatient && (
-       <PatientProfile
-           patientId={selectedPatient}
-           darkMode={darkMode}
-           onClose={() => setSelectedPatient(null)}
-       />
-       )}
+        <PatientProfile
+          patientId={selectedPatient}
+          darkMode={darkMode}
+          onClose={() => setSelectedPatient(null)}
+        />
+      )}
 
-      {/* ==================================== */}
-      {/* DELETE CONFIRM MODAL */}
-      {/* ==================================== */}
+      {/* Delete Modal */}
 
       <ConfirmModal
         isOpen={showDeleteModal}
