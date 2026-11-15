@@ -1,17 +1,15 @@
+
 import pandas as pd
 import shap
 
-from app.ml.load_model import (
-    xgb_model,
-    scaler,
-    encoders
-)
+from app.ml.load_model import xgb_pipeline
+
 
 # =====================================
-# FEATURE ORDER (must match training)
+# FEATURE CONFIGURATION
 # =====================================
 
-features = [
+FEATURES = [
     "age",
     "sex",
     "cp",
@@ -24,9 +22,23 @@ features = [
     "oldpeak",
     "slope",
     "ca",
-    "thal",
+    "thal"
 ]
 
+CLASS_NAMES = {
+    0: "No Risk",
+    1: "Moderate Risk",
+    2: "High Risk"
+}
+
+# Get preprocessing and XGBoost components
+preprocessor = xgb_pipeline.named_steps["preprocessor"]
+xgb_model = xgb_pipeline.named_steps["model"]
+
+# Get transformed feature names (25 features)
+transformed_features = preprocessor.get_feature_names_out()
+
+# Initialize SHAP explainer
 explainer = shap.TreeExplainer(xgb_model)
 
 
@@ -35,33 +47,26 @@ explainer = shap.TreeExplainer(xgb_model)
 # =====================================
 
 def normalize_xai_input(input_data):
-    """Convert frontend values to labels used during model training."""
+    """Normalize frontend categorical values."""
 
-    input_data["restecg"] = input_data["restecg"].replace({
-        "normal": "normal",
-        "st-t abnormality": "st-t abnormality",
-        "left ventricular hypertrophy": "lv hypertrophy",
-        "lv hypertrophy": "lv hypertrophy",
-    })
+    mappings = {
+        "restecg": {
+            "left ventricular hypertrophy": "lv hypertrophy",
+            "left ventricular": "lv hypertrophy"
+        },
+        "thal": {
+            "reversible defect": "reversable defect"
+        }
+    }
 
-    input_data["cp"] = input_data["cp"].replace({
-        "typical angina": "typical angina",
-        "atypical angina": "atypical angina",
-        "non-anginal": "non-anginal",
-        "asymptomatic": "asymptomatic",
-    })
-
-    input_data["slope"] = input_data["slope"].replace({
-        "upsloping": "upsloping",
-        "flat": "flat",
-        "downsloping": "downsloping",
-    })
-
-    input_data["thal"] = input_data["thal"].replace({
-        "normal": "normal",
-        "fixed defect": "fixed defect",
-        "reversable defect": "reversable defect",
-    })
+    for column, mapping in mappings.items():
+        input_data[column] = input_data[column].apply(
+            lambda value: (
+                mapping.get(value.strip().lower(), value.strip().lower())
+                if isinstance(value, str)
+                else value
+            )
+        )
 
     return input_data
 
@@ -72,10 +77,7 @@ def normalize_xai_input(input_data):
 
 def explain_prediction(data):
 
-    # -----------------------------
-    # Create dataframe
-    # -----------------------------
-
+    # Create input dataframe
     input_data = pd.DataFrame([{
         "age": data.age,
         "sex": data.sex,
@@ -89,95 +91,73 @@ def explain_prediction(data):
         "oldpeak": data.oldpeak,
         "slope": data.slope,
         "ca": data.ca,
-        "thal": data.thal,
-    }])
+        "thal": data.thal
+    }], columns=FEATURES)
 
-    # -----------------------------
-    # Normalize labels
-    # -----------------------------
-
+    # Normalize frontend labels
     input_data = normalize_xai_input(input_data)
 
-    print("Normalized SHAP Input")
+    print("Normalized SHAP Input:")
     print(input_data)
 
-    # -----------------------------
-    # Encode categorical columns
-    # -----------------------------
+    # Apply the same fitted preprocessing as prediction
+    transformed_data = preprocessor.transform(input_data)
 
-    categorical_columns = [
-        "sex",
-        "cp",
-        "fbs",
-        "restecg",
-        "exang",
-        "slope",
-        "thal",
-    ]
+    # Predict using complete pipeline
+    prediction = int(xgb_pipeline.predict(input_data)[0])
 
-    for column in categorical_columns:
+    # Calculate SHAP values
+    shap_result = explainer(transformed_data)
 
-        encoder = encoders[column]
+    shap_values = shap_result.values
 
-        # Convert only string columns
-        if column not in ["fbs", "exang"]:
-            input_data[column] = input_data[column].astype(str)
-
-        print(f"Encoding {column}")
-        print("Input :", input_data[column].tolist())
-        print("Classes:", encoder.classes_)
-
-        input_data[column] = encoder.transform(input_data[column])
-
-    # -----------------------------
-    # Scale data
-    # -----------------------------
-
-    scaled_data = scaler.transform(input_data)
-
-    # -----------------------------
-    # Predict class
-    # -----------------------------
-
-    prediction = int(xgb_model.predict(scaled_data)[0])
-
-    # -----------------------------
-    # SHAP values
-    # -----------------------------
-
-    shap_values = explainer.shap_values(scaled_data)
-
-    # Works for multiclass XGBoost
-    if isinstance(shap_values, list):
-        class_shap_values = shap_values[prediction][0]
+    # Select SHAP values for predicted class
+    if shap_values.ndim == 3:
+        class_shap_values = shap_values[0, :, prediction]
     else:
-        class_shap_values = shap_values[0][:, prediction]
+        raise ValueError(
+            f"Unexpected SHAP output shape: {shap_values.shape}"
+        )
 
-    # -----------------------------
-    # Build feature importance
-    # -----------------------------
+
+    # Build readable feature importance
+    transformed_values = (
+        transformed_data.toarray()[0]
+        if hasattr(transformed_data, "toarray")
+        else transformed_data[0]
+    )
 
     feature_importance = []
 
-    for feature_name, shap_value in zip(features, class_shap_values):
+    for feature_name, shap_value, feature_value in zip(
+        transformed_features,
+        class_shap_values,
+        transformed_values
+    ):
+        readable_name = (
+            feature_name
+            .replace("numeric__", "")
+            .replace("categorical__", "")
+            .replace("_", " ")
+            .title()
+        )
+
         feature_importance.append({
-            "feature": feature_name,
+            "feature": readable_name,
+            "original_feature": str(feature_name),
+            "feature_value": float(feature_value),
             "value": round(float(shap_value), 4),
             "impact": round(float(abs(shap_value)), 4),
+            "direction": (
+                "towards_prediction"
+                if shap_value > 0
+                else "away_from_prediction"
+                if shap_value < 0
+                else "neutral"
+            )
         })
 
-    # Sort by absolute impact
-    feature_importance = sorted(
-        feature_importance,
-        key=lambda x: x["impact"],
-        reverse=True,
+    feature_importance.sort(
+        key=lambda item: item["impact"],
+        reverse=True
     )
-
-    # -----------------------------
-    # Return response for React
-    # -----------------------------
-
-    return {
-        "prediction": prediction,
-        "feature_importance": feature_importance,
-    }

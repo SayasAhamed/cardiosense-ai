@@ -1,30 +1,27 @@
+
+from pathlib import Path
 import joblib
-import os
 
-BASE_DIR = os.path.dirname(
-    os.path.abspath(__file__)
+# Locate project root
+BASE_DIR = Path(__file__).resolve().parents[3]
+
+MODEL_PATH = (
+    BASE_DIR
+    / "ml-models"
+    / "saved_models"
+    / "xgboost_final.pkl"
 )
 
-MODEL_PATH = os.path.join(
-    BASE_DIR,
-    "../../../ml-models/saved_models/xgb_model.pkl"
-)
+if not MODEL_PATH.exists():
+    raise FileNotFoundError(
+        f"XGBoost model not found: {MODEL_PATH}"
+    )
 
-SCALER_PATH = os.path.join(
-    BASE_DIR,
-    "../../../ml-models/saved_models/scaler.pkl"
-)
+# Load complete preprocessing and prediction pipeline
+xgb_pipeline = joblib.load(MODEL_PATH)
 
-ENCODER_PATH = os.path.join(
-    BASE_DIR,
-    "../../../ml-models/saved_models/encoders.pkl"
-)
+# Access internal components
+preprocessor = xgb_pipeline.named_steps["preprocessor"]
+xgb_model = xgb_pipeline.named_steps["model"]
 
-# LOAD MODEL
-xgb_model = joblib.load(MODEL_PATH)
-
-# LOAD SCALER
-scaler = joblib.load(SCALER_PATH)
-
-# LOAD ENCODERS
-encoders = joblib.load(ENCODER_PATH)
+print("CardioSense AI final XGBoost pipeline loaded.")

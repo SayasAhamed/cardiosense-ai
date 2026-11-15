@@ -1,3 +1,8 @@
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.exceptions import RequestValidationError
@@ -24,6 +29,7 @@ from app.routes.prediction_routes import router as prediction_router
 from app.routes.prediction_history_routes import router as prediction_history_router
 from app.routes.xai_routes import router as xai_router
 from app.routes.dashboard_routes import router as dashboard_router
+from app.routes.password_reset_routes import router as password_reset_router
 from app.routes.analytics_routes import router as analytics_router
 
 
@@ -100,6 +106,7 @@ create_default_admin()
 
 app.include_router(auth_router)
 app.include_router(login_router)
+app.include_router(password_reset_router)
 app.include_router(patient_router)
 app.include_router(prediction_router)
 app.include_router(prediction_history_router)
@@ -113,13 +120,6 @@ app.include_router(
     tags=["Analytics"]
 )
 
-#=====================================================
-
-app.include_router(
-    analytics_router,
-    prefix="/analytics",
-    tags=["Analytics"]
-)
 
 # =====================================================
 # VALIDATION ERROR HANDLER
