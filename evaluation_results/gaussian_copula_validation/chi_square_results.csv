@@ -1,0 +1,8 @@
+Feature,Chi Square,Degrees of Freedom,P Value,Result
+sex,1.1063482738954389,1,0.29287713250561165,No significant difference
+cp,2.416397469771652,3,0.4905895381866354,No significant difference
+fbs,497.90341589738887,2,7.614597948585158e-109,Significant difference
+restecg,11.357907525556326,3,0.00993990797392366,Significant difference
+exang,303.4267174077452,2,1.29337804304524e-66,Significant difference
+slope,1829.4687401652222,3,0.0,Significant difference
+thal,2973.077906429462,3,0.0,Significant difference

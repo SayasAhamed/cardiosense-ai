@@ -1,5 +1,9 @@
 import { useEffect, useState } from "react"
 
+import ForgotPassword from "./pages/ForgotPassword";
+import VerifyOTP from "./pages/VerifyOTP";
+import ResetPassword from "./pages/ResetPassword";
+
 import PredictionForm from "./components/PredictionForm"
 import PatientForm from "./components/PatientForm"
 import PatientList from "./components/PatientList"

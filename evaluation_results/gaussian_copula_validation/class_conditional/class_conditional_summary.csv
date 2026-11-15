@@ -1,0 +1,4 @@
+class,real_records,synthetic_records,mean_abs_correlation_difference
+0,411,1667,0.06473427386441058
+1,374,1667,0.07794260053952556
+2,135,1666,0.14083660387291425

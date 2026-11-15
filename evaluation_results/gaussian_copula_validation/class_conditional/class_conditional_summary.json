@@ -1,0 +1,185 @@
+{
+    "0": {
+        "real_records": 411,
+        "synthetic_records": 1667,
+        "mean_absolute_correlation_difference": 0.06473427386441058,
+        "distribution_results": [
+            {
+                "class": 0,
+                "feature": "age",
+                "real_mean": 50.54744525547445,
+                "synthetic_mean": 51.576484703059386,
+                "real_std": 9.433699946302818,
+                "synthetic_std": 9.2769512044462,
+                "wasserstein_distance": 1.0630939505529549
+            },
+            {
+                "class": 0,
+                "feature": "trestbps",
+                "real_mean": 129.91727493917276,
+                "synthetic_mean": 129.8644271145771,
+                "real_std": 16.45327362696361,
+                "synthetic_std": 17.121193603978274,
+                "wasserstein_distance": 2.1892789325346604
+            },
+            {
+                "class": 0,
+                "feature": "chol",
+                "real_mean": 227.67883211678833,
+                "synthetic_mean": 258.1115776844631,
+                "real_std": 74.06199785610431,
+                "synthetic_std": 58.92626298789277,
+                "wasserstein_distance": 31.49560452872929
+            },
+            {
+                "class": 0,
+                "feature": "thalch",
+                "real_mean": 148.37226277372264,
+                "synthetic_mean": 144.8392321535693,
+                "real_std": 23.10358666040154,
+                "synthetic_std": 23.5788747370149,
+                "wasserstein_distance": 3.5643090360030176
+            },
+            {
+                "class": 0,
+                "feature": "oldpeak",
+                "real_mean": 0.42238442822384425,
+                "synthetic_mean": 0.5533893221355729,
+                "real_std": 0.6973015291724209,
+                "synthetic_std": 0.937279257831317,
+                "wasserstein_distance": 0.40687585110715074
+            },
+            {
+                "class": 0,
+                "feature": "ca",
+                "real_mean": 0.11192214111922141,
+                "synthetic_mean": 0.20035992801439712,
+                "real_std": 0.427276061753522,
+                "synthetic_std": 0.5844523113373802,
+                "wasserstein_distance": 0.08843778689517579
+            }
+        ]
+    },
+    "1": {
+        "real_records": 374,
+        "synthetic_records": 1667,
+        "mean_absolute_correlation_difference": 0.07794260053952556,
+        "distribution_results": [
+            {
+                "class": 1,
+                "feature": "age",
+                "real_mean": 54.70855614973262,
+                "synthetic_mean": 54.277744451109776,
+                "real_std": 8.661528235141443,
+                "synthetic_std": 9.237379187907477,
+                "wasserstein_distance": 0.905868558908539
+            },
+            {
+                "class": 1,
+                "feature": "trestbps",
+                "real_mean": 132.90374331550802,
+                "synthetic_mean": 132.70245950809837,
+                "real_std": 18.59866341585299,
+                "synthetic_std": 18.441634675521914,
+                "wasserstein_distance": 1.7493175161759091
+            },
+            {
+                "class": 1,
+                "feature": "chol",
+                "real_mean": 181.2192513368984,
+                "synthetic_mean": 243.19736052789443,
+                "real_std": 126.98031366060981,
+                "synthetic_std": 57.066241013204504,
+                "wasserstein_distance": 66.12755951483503
+            },
+            {
+                "class": 1,
+                "feature": "thalch",
+                "real_mean": 130.86898395721926,
+                "synthetic_mean": 133.51829634073187,
+                "real_std": 22.69748484453373,
+                "synthetic_std": 24.896378191130108,
+                "wasserstein_distance": 3.406036974423297
+            },
+            {
+                "class": 1,
+                "feature": "oldpeak",
+                "real_mean": 1.0655080213903743,
+                "synthetic_mean": 0.9875824835032995,
+                "real_std": 1.073723512316198,
+                "synthetic_std": 1.0062985785425624,
+                "wasserstein_distance": 0.19112065287477256
+            },
+            {
+                "class": 1,
+                "feature": "ca",
+                "real_mean": 0.232620320855615,
+                "synthetic_mean": 0.259748050389922,
+                "real_std": 0.6143110792636439,
+                "synthetic_std": 0.6676044748221954,
+                "wasserstein_distance": 0.027127729534307088
+            }
+        ]
+    },
+    "2": {
+        "real_records": 135,
+        "synthetic_records": 1666,
+        "mean_absolute_correlation_difference": 0.14083660387291425,
+        "distribution_results": [
+            {
+                "class": 2,
+                "feature": "age",
+                "real_mean": 59.214814814814815,
+                "synthetic_mean": 57.424369747899156,
+                "real_std": 8.020854520658627,
+                "synthetic_std": 8.664066504900717,
+                "wasserstein_distance": 1.7971588635454183
+            },
+            {
+                "class": 2,
+                "feature": "trestbps",
+                "real_mean": 135.8074074074074,
+                "synthetic_mean": 135.1704681872749,
+                "real_std": 22.66119580841022,
+                "synthetic_std": 18.136280679835824,
+                "wasserstein_distance": 3.442923836201148
+            },
+            {
+                "class": 2,
+                "feature": "chol",
+                "real_mean": 167.14074074074074,
+                "synthetic_mean": 228.1590636254502,
+                "real_std": 124.31802999378957,
+                "synthetic_std": 54.49086678927947,
+                "wasserstein_distance": 62.31863856653774
+            },
+            {
+                "class": 2,
+                "feature": "thalch",
+                "real_mean": 124.08148148148148,
+                "synthetic_mean": 124.83673469387755,
+                "real_std": 24.54938727747154,
+                "synthetic_std": 24.982150887483765,
+                "wasserstein_distance": 1.613863323107021
+            },
+            {
+                "class": 2,
+                "feature": "oldpeak",
+                "real_mean": 1.5770370370370368,
+                "synthetic_mean": 1.438955582232893,
+                "real_std": 1.3258025303054335,
+                "synthetic_std": 1.0563526639235732,
+                "wasserstein_distance": 0.2928838201947446
+            },
+            {
+                "class": 2,
+                "feature": "ca",
+                "real_mean": 0.562962962962963,
+                "synthetic_mean": 0.3025210084033613,
+                "real_std": 0.9743532673844725,
+                "synthetic_std": 0.6816026916673024,
+                "wasserstein_distance": 0.2604419545596015
+            }
+        ]
+    }
+}

@@ -1,0 +1,15 @@
+cd ~/Desktop/cardiosense-ai/backend
+
+source venv/Scripts/activate
+
+python -m uvicorn app.main:app --reload
+
+
+
+########################################################
+
+cd ~/Desktop/cardiosense-ai/frontend
+
+npm install
+
+npm run dev

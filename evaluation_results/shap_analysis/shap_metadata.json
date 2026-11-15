@@ -1,0 +1,9 @@
+{
+    "explained_samples": 100,
+    "feature_count": 25,
+    "classes": {
+        "0": "No Disease",
+        "1": "Moderate Disease",
+        "2": "Higher Disease Severity"
+    }
+}

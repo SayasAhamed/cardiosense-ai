@@ -1,0 +1,19 @@
+{
+    "dataset_name": "CardioSense AI Final Research Dataset",
+    "total_records": 5920,
+    "original_records": 920,
+    "synthetic_records": 5000,
+    "record_provenance": {
+        "real": 920,
+        "synthetic": 5000
+    },
+    "target_distribution": {
+        "0": 2078,
+        "1": 2041,
+        "2": 1801
+    },
+    "missing_values": 0,
+    "duplicate_records": 2,
+    "generator": "Gaussian Copula",
+    "note": "Synthetic records were generated using a model fitted on the full original UCI dataset. This combined dataset must not be used as an independent evaluation dataset."
+}

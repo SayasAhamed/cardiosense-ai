@@ -1,0 +1,33 @@
+{
+    "No Disease": {
+        "precision": 0.7701149425287356,
+        "recall": 0.8170731707317073,
+        "f1-score": 0.7928994082840237,
+        "support": 82.0
+    },
+    "Moderate Disease": {
+        "precision": 0.6309523809523809,
+        "recall": 0.7066666666666667,
+        "f1-score": 0.6666666666666666,
+        "support": 75.0
+    },
+    "Higher Disease Severity": {
+        "precision": 0.6153846153846154,
+        "recall": 0.2962962962962963,
+        "f1-score": 0.4,
+        "support": 27.0
+    },
+    "accuracy": 0.6956521739130435,
+    "macro avg": {
+        "precision": 0.6721506462885772,
+        "recall": 0.6066787112315567,
+        "f1-score": 0.6198553583168968,
+        "support": 184.0
+    },
+    "weighted avg": {
+        "precision": 0.6906860786639647,
+        "recall": 0.6956521739130435,
+        "f1-score": 0.6837921276048367,
+        "support": 184.0
+    }
+}
